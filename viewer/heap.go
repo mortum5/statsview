@@ -48,6 +48,7 @@ func (vr *HeapViewer) View() *charts.Line {
 func (vr *HeapViewer) Serve(w http.ResponseWriter, _ *http.Request) {
 	vr.smgr.Tick()
 
+	memstats.mu.RLock()
 	metrics := Metrics{
 		Values: []float64{
 			fixedPrecision(float64(memstats.Stats.HeapAlloc)/1024/1024, 2),
@@ -57,6 +58,7 @@ func (vr *HeapViewer) Serve(w http.ResponseWriter, _ *http.Request) {
 		},
 		Time: memstats.T,
 	}
+	memstats.mu.RUnlock()
 
 	bs, _ := json.Marshal(metrics)
 	w.Write(bs)

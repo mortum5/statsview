@@ -47,10 +47,12 @@ func (vr *GCNumViewer) View() *charts.Line {
 func (vr *GCNumViewer) Serve(w http.ResponseWriter, _ *http.Request) {
 	vr.smgr.Tick()
 
+	memstats.mu.RLock()
 	metrics := Metrics{
 		Values: []float64{float64(memstats.Stats.NumGC)},
 		Time:   memstats.T,
 	}
+	memstats.mu.RUnlock()
 
 	bs, _ := json.Marshal(metrics)
 	w.Write(bs)

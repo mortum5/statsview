@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"runtime"
 	"strconv"
+	"sync"
 	"text/template"
 	"time"
 
@@ -171,6 +172,7 @@ type Viewer interface {
 type statsEntity struct {
 	Stats *runtime.MemStats
 	T     string
+	mu    sync.RWMutex
 }
 
 var memstats = &statsEntity{Stats: &runtime.MemStats{}}
@@ -179,6 +181,7 @@ type StatsMgr struct {
 	last   int64
 	Ctx    context.Context
 	Cancel context.CancelFunc
+	mu     sync.RWMutex
 }
 
 func NewStatsMgr(ctx context.Context) *StatsMgr {
@@ -190,7 +193,15 @@ func NewStatsMgr(ctx context.Context) *StatsMgr {
 }
 
 func (s *StatsMgr) Tick() {
+	s.mu.Lock()
 	s.last = time.Now().Unix() + int64(float64(Interval())/1000.0)*2
+	s.mu.Unlock()
+}
+
+func (s *StatsMgr) GetTick() int64 {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.last
 }
 
 func (s *StatsMgr) polling() {
@@ -200,9 +211,11 @@ func (s *StatsMgr) polling() {
 	for {
 		select {
 		case <-ticker.C:
-			if s.last > time.Now().Unix() {
+			if s.GetTick() > time.Now().Unix() {
+				memstats.mu.Lock()
 				runtime.ReadMemStats(memstats.Stats)
 				memstats.T = time.Now().Format(defaultCfg.TimeFormat)
+				memstats.mu.Unlock()
 			}
 		case <-s.Ctx.Done():
 			return
