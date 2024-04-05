@@ -2,23 +2,25 @@
 
 Statsview is a real-time Golang runtime stats visualization profiler. It is built top on another open-source project, [go-echarts](https://github.com/go-echarts/go-echarts), which helps statsview to show its graphs on the browser.
 
-<a href="https://github.com/go-echarts/statsview/pulls">
+Fork of project [statsview](https://github.com/go-echarts/statsview)
+
+<a href="https://github.com/mortum5/statsview/pulls">
     <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" alt="Contributions welcome">
 </a>
-<a href="https://goreportcard.com/report/github.com/go-echarts/statsview">
-    <img src="https://goreportcard.com/badge/github.com/go-echarts/statsview" alt="Go Report Card">
+<a href="https://goreportcard.com/report/github.com/mortum5/statsview">
+    <img src="https://goreportcard.com/badge/github.com/mortum5/statsview" alt="Go Report Card">
 </a>
 <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg" alt="MIT License">
 </a>
-<a href="https://pkg.go.dev/github.com/go-echarts/statsview">
-    <img src="https://godoc.org/github.com/go-echarts/statsview?status.svg" alt="GoDoc">
+<a href="https://pkg.go.dev/github.com/mortum5/statsview">
+    <img src="https://godoc.org/github.com/mortum5/statsview?status.svg" alt="GoDoc">
  </a>
 
 ## 🔰 Installation
 
 ```shell
-$ go get -u github.com/go-echarts/statsview/...
+$ go get -u github.com/mortum5/statsview/...
 ```
 
 ## 📝 Usage
@@ -31,7 +33,7 @@ package main
 import (
     "time"
 
-    "github.com/go-echarts/statsview"
+    "github.com/mortum5/statsview"
 )
 
 func main() {
@@ -93,8 +95,8 @@ WithTheme(theme Theme)
 
 ```golang
 import (
-    "github.com/go-echarts/statsview"
-    "github.com/go-echarts/statsview/viewer"
+    "github.com/mortum5/statsview"
+    "github.com/mortum5/statsview/viewer"
 )
 
 // set configurations before calling `statsview.New()` method
