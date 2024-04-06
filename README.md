@@ -4,18 +4,10 @@ Statsview is a real-time Golang runtime stats visualization profiler. It is buil
 
 Fork of project [statsview](https://github.com/go-echarts/statsview)
 
-<a href="https://github.com/mortum5/statsview/pulls">
-    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" alt="Contributions welcome">
-</a>
-<a href="https://goreportcard.com/report/github.com/mortum5/statsview">
-    <img src="https://goreportcard.com/badge/github.com/mortum5/statsview" alt="Go Report Card">
-</a>
-<a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg" alt="MIT License">
-</a>
-<a href="https://pkg.go.dev/github.com/mortum5/statsview">
-    <img src="https://godoc.org/github.com/mortum5/statsview?status.svg" alt="GoDoc">
- </a>
+[![Go Reference](https://pkg.go.dev/badge/github.com/mortum5/statsview.svg)](https://pkg.go.dev/github.com/mortum5/statsview)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mortum5/statsview)](https://goreportcard.com/report/github.com/mortum5/statsview)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 
 ## 🔰 Installation
 
