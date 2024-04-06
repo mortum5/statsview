@@ -95,6 +95,10 @@ WithLinkAddr(addr string)
 // default -> "15:04:05"
 WithTimeFormat(s string)
 
+// WithBrowserOpen start browser session and open url automatically
+// default -> disabled
+WithBrowserOpen()
+
 // WithTheme sets the theme of the charts
 // default -> Macarons
 //

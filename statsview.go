@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-echarts/go-echarts/v2/components"
 	"github.com/go-echarts/go-echarts/v2/templates"
+	"github.com/pkg/browser"
 	"github.com/rs/cors"
 
 	"github.com/go-echarts/statsview/statics"
@@ -27,6 +28,9 @@ type ViewManager struct {
 
 // Start runs a http server and begin to collect metrics
 func (vm *ViewManager) Start() error {
+	if viewer.BrowserOpen() {
+		browser.OpenURL(fmt.Sprintf("http://%s/debug/statsview", viewer.Addr()))
+	}
 	return vm.srv.ListenAndServe()
 }
 

@@ -24,13 +24,14 @@ type Metrics struct {
 }
 
 type config struct {
-	Interval   int
-	MaxPoints  int
-	Template   string
-	ListenAddr string
-	LinkAddr   string
-	TimeFormat string
-	Theme      Theme
+	AutoOpenBrowser bool
+	Interval        int
+	MaxPoints       int
+	Template        string
+	ListenAddr      string
+	LinkAddr        string
+	TimeFormat      string
+	Theme           Theme
 }
 
 type Theme string
@@ -109,6 +110,10 @@ func TimeFormat() string {
 	return defaultCfg.TimeFormat
 }
 
+func BrowserOpen() bool {
+	return defaultCfg.AutoOpenBrowser
+}
+
 // WithInterval sets the interval of collecting and pulling metrics
 func WithInterval(interval int) Option {
 	return func(c *config) {
@@ -160,6 +165,12 @@ func WithTheme(theme Theme) Option {
 	}
 }
 
+func WithBrowserOpen() Option {
+	return func(c *config) {
+		c.AutoOpenBrowser = true
+	}
+}
+
 func SetConfiguration(opts ...Option) {
 	for _, opt := range opts {
 		opt(defaultCfg)
@@ -176,7 +187,6 @@ type Viewer interface {
 
 type statsEntity struct {
 	Stats *runtime.MemStats
-	T     string
 	mu    sync.RWMutex
 }
 
@@ -187,7 +197,6 @@ type StatsMgr struct {
 	time   int64
 	Ctx    context.Context
 	Cancel context.CancelFunc
-	mu     sync.RWMutex
 }
 
 func NewStatsMgr(ctx context.Context) *StatsMgr {
