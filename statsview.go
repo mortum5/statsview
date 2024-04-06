@@ -23,15 +23,16 @@ import (
 
 func init() {
 	templates.PageTpl = `
-		{{- define "page" }}
-		<!DOCTYPE html>
-		<html>
-			{{- template "header" . }}
-		<body>
-		<div class="box"> {{- range .Charts }} {{ template "base" . }} {{- end }} </div>
-		</body>
-		</html>
-		{{ end }}
+	{{- define "page" }}
+	<!DOCTYPE html>
+	<html>
+		{{- template "header" . }}
+	<body>
+	<style> .box { justify-content:center; display:flex; flex-wrap:wrap } </style>
+	<div class="box"> {{- range .Charts }} {{ template "base" . }} {{- end }} </div>
+	</body>
+	</html>
+	{{ end }}
 		`
 }
 
@@ -78,8 +79,13 @@ type ViewManager struct {
 
 // Start runs a http server and begin to collect metrics
 func (vm *ViewManager) Start() error {
+	var t time.Timer = *time.NewTimer(time.Second)
+	defer t.Stop()
 	if viewer.BrowserOpen() {
-		browser.OpenURL(fmt.Sprintf("http://%s/debug/statsview", viewer.Addr()))
+		t = *time.AfterFunc(time.Second, func() {
+			browser.OpenURL(fmt.Sprintf("http://%s/debug/statsview", viewer.Addr()))
+		})
+
 	}
 	return vm.srv.ListenAndServe()
 }

@@ -206,7 +206,9 @@ type StatsMgr struct {
 
 // NewStatsMgr create new instance
 func NewStatsMgr(ctx context.Context) *StatsMgr {
-	s := &StatsMgr{}
+	s := &StatsMgr{
+		last: time.Now().Unix() + int64(float64(Interval())/1000.0)*2,
+	}
 	s.Ctx, s.Cancel = context.WithCancel(ctx)
 	go s.polling()
 
@@ -298,6 +300,11 @@ func NewBasicView(route string) *charts.Line {
 		charts.WithLegendOpts(opts.Legend{Show: true}),
 		charts.WithTooltipOpts(opts.Tooltip{Show: true, Trigger: "axis"}),
 		charts.WithXAxisOpts(opts.XAxis{Name: "Time"}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Type:  "slider",
+			Start: 0,
+			End:   100,
+		}),
 		charts.WithInitializationOpts(opts.Initialization{
 			Width:  "600px",
 			Height: "400px",
