@@ -25,12 +25,6 @@ type ViewManager struct {
 	Views  []viewer.Viewer
 }
 
-// Register registers views to the ViewManager
-func (vm *ViewManager) Register(views ...viewer.Viewer) {
-	vm.Views = append(vm.Views, views...)
-
-}
-
 // Start runs a http server and begin to collect metrics
 func (vm *ViewManager) Start() error {
 	return vm.srv.ListenAndServe()
@@ -60,8 +54,29 @@ func init() {
 `
 }
 
+type Viewers []viewer.Viewer
+
+func NewDefaultViewers() Viewers {
+	return Viewers{
+		viewer.NewGoroutinesViewer(),
+		viewer.NewHeapViewer(),
+		viewer.NewStackViewer(),
+		viewer.NewGCNumViewer(),
+		viewer.NewGCSizeViewer(),
+		viewer.NewGCCPUFractionViewer(),
+	}
+}
+
+func NewEmptyViewers() Viewers {
+	return Viewers{}
+}
+
+func (v *Viewers) Register(views ...viewer.Viewer) {
+	*v = append(*v, views...)
+}
+
 // New creates a new ViewManager instance
-func New() *ViewManager {
+func New(viewers Viewers) *ViewManager {
 	page := components.NewPage()
 	page.PageTitle = "Statsview"
 	page.AssetsHost = fmt.Sprintf("http://%s/debug/statsview/statics/", viewer.LinkAddr())
@@ -76,14 +91,8 @@ func New() *ViewManager {
 		},
 	}
 	mgr.Ctx, mgr.Cancel = context.WithCancel(context.Background())
-	mgr.Register(
-		viewer.NewGoroutinesViewer(),
-		viewer.NewHeapViewer(),
-		viewer.NewStackViewer(),
-		viewer.NewGCNumViewer(),
-		viewer.NewGCSizeViewer(),
-		viewer.NewGCCPUFractionViewer(),
-	)
+	mgr.Views = viewers
+
 	smgr := viewer.NewStatsMgr(mgr.Ctx)
 	for _, v := range mgr.Views {
 		v.SetStatsMgr(smgr)

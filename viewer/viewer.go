@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"text/template"
 	"time"
 
@@ -104,6 +105,10 @@ func Interval() int {
 	return defaultCfg.Interval
 }
 
+func TimeFormat() string {
+	return defaultCfg.TimeFormat
+}
+
 // WithInterval sets the interval of collecting and pulling metrics
 func WithInterval(interval int) Option {
 	return func(c *config) {
@@ -179,6 +184,7 @@ var memstats = &statsEntity{Stats: &runtime.MemStats{}}
 
 type StatsMgr struct {
 	last   int64
+	time   int64
 	Ctx    context.Context
 	Cancel context.CancelFunc
 	mu     sync.RWMutex
@@ -193,15 +199,19 @@ func NewStatsMgr(ctx context.Context) *StatsMgr {
 }
 
 func (s *StatsMgr) Tick() {
-	s.mu.Lock()
-	s.last = time.Now().Unix() + int64(float64(Interval())/1000.0)*2
-	s.mu.Unlock()
+	atomic.StoreInt64(&s.last, time.Now().Unix()+int64(float64(Interval())/1000.0)*2)
 }
 
 func (s *StatsMgr) GetTick() int64 {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	return s.last
+	return atomic.LoadInt64(&s.last)
+}
+
+func (s *StatsMgr) TimeUpdate() {
+	atomic.StoreInt64(&s.time, time.Now().Unix())
+}
+
+func (s *StatsMgr) GetTime() int64 {
+	return atomic.LoadInt64(&s.time)
 }
 
 func (s *StatsMgr) polling() {
@@ -213,8 +223,8 @@ func (s *StatsMgr) polling() {
 		case <-ticker.C:
 			if s.GetTick() > time.Now().Unix() {
 				memstats.mu.Lock()
+				s.TimeUpdate()
 				runtime.ReadMemStats(memstats.Stats)
-				memstats.T = time.Now().Format(defaultCfg.TimeFormat)
 				memstats.mu.Unlock()
 			}
 		case <-s.Ctx.Done():
@@ -262,7 +272,7 @@ func fixedPrecision(n float64, p int) float64 {
 	return r
 }
 
-func newBasicView(route string) *charts.Line {
+func NewBasicView(route string) *charts.Line {
 	graph := charts.NewLine()
 	graph.SetGlobalOptions(
 		charts.WithLegendOpts(opts.Legend{Show: true}),

@@ -34,12 +34,25 @@ import (
     "time"
 
     "github.com/mortum5/statsview"
+	"github.com/go-echarts/statsview/viewer"
 )
 
 func main() {
-	mgr := statsview.New()
+    // NewEmptyViewers() create empty viewers collection
+	viewers := statsview.NewEmptyViewers()
 
-	// Start() runs a HTTP server at `localhost:18066` by default.
+    // NewDefaultViewers() create viewers collection with default viewers
+	// viewers := statsview.NewDefaultViewers()
+
+	viewers.Register(
+		viewer.NewGoroutinesViewer(),
+		viewer.NewHeapViewer(),
+		viewer.NewStackViewer(),
+	)
+
+	mgr := statsview.New(viewers)
+
+    // Start() runs a HTTP server at `localhost:18066` by default.
 	go mgr.Start()
 
 	// Stop() will shutdown the http server gracefully
@@ -100,7 +113,10 @@ import (
 )
 
 // set configurations before calling `statsview.New()` method
-viewer.SetConfiguration(viewer.WithTheme(viewer.ThemeWesteros), viewer.WithAddr("localhost:8087"))
+viewer.SetConfiguration(
+    viewer.WithTheme(viewer.ThemeWesteros), 
+    viewer.WithAddr("localhost:8087")
+)
 
 mgr := statsview.New()
 go mgr.Start()

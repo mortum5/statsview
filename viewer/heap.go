@@ -3,6 +3,7 @@ package viewer
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
@@ -22,7 +23,7 @@ type HeapViewer struct {
 // NewHeapViewer returns the HeapViewer instance
 // Series: Alloc / Inuse / Sys / Idle
 func NewHeapViewer() Viewer {
-	graph := newBasicView(VHeap)
+	graph := NewBasicView(VHeap)
 	graph.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{Title: "Heap"}),
 		charts.WithYAxisOpts(opts.YAxis{Name: "Size", AxisLabel: &opts.AxisLabel{Formatter: "{value} MB"}}),
@@ -56,7 +57,7 @@ func (vr *HeapViewer) Serve(w http.ResponseWriter, _ *http.Request) {
 			fixedPrecision(float64(memstats.Stats.HeapSys)/1024/1024, 2),
 			fixedPrecision(float64(memstats.Stats.HeapIdle)/1024/1024, 2),
 		},
-		Time: memstats.T,
+		Time: time.Unix(vr.smgr.GetTime(), 0).Format(TimeFormat()),
 	}
 	memstats.mu.RUnlock()
 

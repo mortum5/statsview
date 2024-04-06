@@ -3,6 +3,7 @@ package viewer
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
@@ -22,7 +23,7 @@ type StackViewer struct {
 // NewStackViewer returns the StackViewer instance
 // Series: StackSys / StackInuse / MSpanSys / MSpanInuse
 func NewStackViewer() Viewer {
-	graph := newBasicView(VCStack)
+	graph := NewBasicView(VCStack)
 	graph.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{Title: "Stack"}),
 		charts.WithYAxisOpts(opts.YAxis{Name: "Size", AxisLabel: &opts.AxisLabel{Formatter: "{value} MB"}}),
@@ -58,7 +59,7 @@ func (vr *StackViewer) Serve(w http.ResponseWriter, _ *http.Request) {
 			fixedPrecision(float64(memstats.Stats.MSpanSys)/1024/1024, 2),
 			fixedPrecision(float64(memstats.Stats.MSpanInuse)/1024/1024, 2),
 		},
-		Time: memstats.T,
+		Time: time.Unix(vr.smgr.GetTime(), 0).Format(TimeFormat()),
 	}
 	memstats.mu.RUnlock()
 

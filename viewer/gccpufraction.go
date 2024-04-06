@@ -3,6 +3,7 @@ package viewer
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
@@ -22,7 +23,7 @@ type GCCPUFractionViewer struct {
 // NewGCCPUFractionViewer returns the GCCPUFractionViewer instance
 // Series: Fraction
 func NewGCCPUFractionViewer() Viewer {
-	graph := newBasicView(VGCCPUFraction)
+	graph := NewBasicView(VGCCPUFraction)
 	graph.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{Title: "GC CPUFraction"}),
 		charts.WithYAxisOpts(opts.YAxis{Name: "Percent", AxisLabel: &opts.AxisLabel{Formatter: "{value} %", Rotate: 35}}),
@@ -50,7 +51,7 @@ func (vr *GCCPUFractionViewer) Serve(w http.ResponseWriter, _ *http.Request) {
 	memstats.mu.RLock()
 	metrics := Metrics{
 		Values: []float64{fixedPrecision(memstats.Stats.GCCPUFraction, 6)},
-		Time:   memstats.T,
+		Time:   time.Unix(vr.smgr.GetTime(), 0).Format(TimeFormat()),
 	}
 	memstats.mu.RUnlock()
 

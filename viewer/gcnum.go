@@ -3,6 +3,7 @@ package viewer
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
@@ -22,7 +23,7 @@ type GCNumViewer struct {
 // NewGCNumViewer returns the GCNumViewer instance
 // Series: GcNum
 func NewGCNumViewer() Viewer {
-	graph := newBasicView(VGCNum)
+	graph := NewBasicView(VGCNum)
 	graph.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{Title: "GC Number"}),
 		charts.WithYAxisOpts(opts.YAxis{Name: "Num"}),
@@ -50,7 +51,7 @@ func (vr *GCNumViewer) Serve(w http.ResponseWriter, _ *http.Request) {
 	memstats.mu.RLock()
 	metrics := Metrics{
 		Values: []float64{float64(memstats.Stats.NumGC)},
-		Time:   memstats.T,
+		Time:   time.Unix(vr.smgr.GetTime(), 0).Format(TimeFormat()),
 	}
 	memstats.mu.RUnlock()
 
