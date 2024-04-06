@@ -9,11 +9,10 @@ import (
 
 	"github.com/go-echarts/go-echarts/v2/components"
 	"github.com/go-echarts/go-echarts/v2/templates"
+	"github.com/mortum5/statsview/statics"
+	"github.com/mortum5/statsview/viewer"
 	"github.com/pkg/browser"
 	"github.com/rs/cors"
-
-	"github.com/go-echarts/statsview/statics"
-	"github.com/go-echarts/statsview/viewer"
 )
 
 // ViewManager
@@ -49,8 +48,6 @@ func init() {
 <html>
     {{- template "header" . }}
 <body>
-<p>&nbsp;&nbsp;🚀 <a href="https://github.com/go-echarts/statsview"><b>StatsView</b></a> <em>is a real-time Golang runtime stats visualization profiler</em></p>
-<style> .box { justify-content:center; display:flex; flex-wrap:wrap } </style>
 <div class="box"> {{- range .Charts }} {{ template "base" . }} {{- end }} </div>
 </body>
 </html>

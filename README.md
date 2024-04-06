@@ -34,13 +34,13 @@ import (
     "time"
 
     "github.com/mortum5/statsview"
-	"github.com/go-echarts/statsview/viewer"
+	"github.com/mortum5/statsview/viewer"
 )
 
 func main() {
     // NewEmptyViewers() create empty viewers collection
 	viewers := statsview.NewEmptyViewers()
-
+    
     // NewDefaultViewers() create viewers collection with default viewers
 	// viewers := statsview.NewDefaultViewers()
 

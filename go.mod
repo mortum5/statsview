@@ -1,4 +1,4 @@
-module github.com/go-echarts/statsview
+module github.com/mortum5/statsview
 
 go 1.21.0
 
