@@ -62,8 +62,8 @@ func main() {
 	time.Sleep(time.Minute)
 }
 
-// Visit your browser at http://localhost:18066/debug/statsview
-// Or debug as always via http://localhost:18066/debug/pprof, http://localhost:18066/debug/pprof/heap, ...
+    // Visit your browser at http://localhost:18066/debug/statsview
+    // Or debug as always via http://localhost:18066/debug/pprof, http://localhost:18066/debug/pprof/heap, ...
 ```
 
 ## ⚙️ Configuration
@@ -116,13 +116,15 @@ import (
     "github.com/mortum5/statsview/viewer"
 )
 
+viewers := statsview.NewDefaultViewers()
+
 // set configurations before calling `statsview.New()` method
 viewer.SetConfiguration(
     viewer.WithTheme(viewer.ThemeWesteros), 
     viewer.WithAddr("localhost:8087")
 )
 
-mgr := statsview.New()
+mgr := statsview.New(viewers)
 go mgr.Start()
 ```
 
@@ -152,3 +154,4 @@ Viewer wraps a go-echarts [*charts.Line](https://github.com/go-echarts/go-echart
 ## 📄 License
 
 MIT [©chenjiandongx](https://github.com/chenjiandongx)
+MIT [©mortum5](https://github.com/mortum5)

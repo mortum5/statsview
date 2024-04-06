@@ -106,10 +106,12 @@ func Interval() int {
 	return defaultCfg.Interval
 }
 
+// TimeFormat returns time format
 func TimeFormat() string {
 	return defaultCfg.TimeFormat
 }
 
+// BrowserOpen returns flag of browser open
 func BrowserOpen() bool {
 	return defaultCfg.AutoOpenBrowser
 }
@@ -165,12 +167,14 @@ func WithTheme(theme Theme) Option {
 	}
 }
 
+// WithBrowserOpen sets openning browser with addr
 func WithBrowserOpen() Option {
 	return func(c *config) {
 		c.AutoOpenBrowser = true
 	}
 }
 
+// SetConfiguration apply configuration sets
 func SetConfiguration(opts ...Option) {
 	for _, opt := range opts {
 		opt(defaultCfg)
@@ -192,6 +196,7 @@ type statsEntity struct {
 
 var memstats = &statsEntity{Stats: &runtime.MemStats{}}
 
+// StatsMgr runs polling memstats and sets time
 type StatsMgr struct {
 	last   int64
 	time   int64
@@ -199,6 +204,7 @@ type StatsMgr struct {
 	Cancel context.CancelFunc
 }
 
+// NewStatsMgr create new instance
 func NewStatsMgr(ctx context.Context) *StatsMgr {
 	s := &StatsMgr{}
 	s.Ctx, s.Cancel = context.WithCancel(ctx)
@@ -207,18 +213,22 @@ func NewStatsMgr(ctx context.Context) *StatsMgr {
 	return s
 }
 
+// Tick atomically set last to (current time + 2*interval)
 func (s *StatsMgr) Tick() {
 	atomic.StoreInt64(&s.last, time.Now().Unix()+int64(float64(Interval())/1000.0)*2)
 }
 
+// GetTick returns tick value
 func (s *StatsMgr) GetTick() int64 {
 	return atomic.LoadInt64(&s.last)
 }
 
+// TimeUpdate atomically set time to current time
 func (s *StatsMgr) TimeUpdate() {
 	atomic.StoreInt64(&s.time, time.Now().Unix())
 }
 
+// GetTime returns saved time
 func (s *StatsMgr) GetTime() int64 {
 	return atomic.LoadInt64(&s.time)
 }
@@ -281,6 +291,7 @@ func fixedPrecision(n float64, p int) float64 {
 	return r
 }
 
+// NewBasicView generate new charts.Line with default variables
 func NewBasicView(route string) *charts.Line {
 	graph := charts.NewLine()
 	graph.SetGlobalOptions(

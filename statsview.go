@@ -1,3 +1,9 @@
+/*
+Package statsview provide a real-time Golang runtime stats
+visualization profiler. It is built top on another open-source project,
+[go-echarts](https://github.com/go-echarts/go-echarts), which helps
+statsview to show its graphs on the browser.
+*/
 package statsview
 
 import (
@@ -15,14 +21,59 @@ import (
 	"github.com/rs/cors"
 )
 
+func init() {
+	templates.PageTpl = `
+		{{- define "page" }}
+		<!DOCTYPE html>
+		<html>
+			{{- template "header" . }}
+		<body>
+		<div class="box"> {{- range .Charts }} {{ template "base" . }} {{- end }} </div>
+		</body>
+		</html>
+		{{ end }}
+		`
+}
+
+// Viewers represent collection of Viewer
+type Viewers []viewer.Viewer
+
+// NewDefaultViewers generate default collection that includes
+// - GoroutinesViewer
+// - HeapViewer
+// - StackViewer
+// - GCNumViewer
+// - GCSizeViewer
+// - GCCPUFractionViewer
+func NewDefaultViewers() Viewers {
+	return Viewers{
+		viewer.NewGoroutinesViewer(),
+		viewer.NewHeapViewer(),
+		viewer.NewStackViewer(),
+		viewer.NewGCNumViewer(),
+		viewer.NewGCSizeViewer(),
+		viewer.NewGCCPUFractionViewer(),
+	}
+}
+
+// NewEmptyViewers returns empty collection without any Viewer
+func NewEmptyViewers() Viewers {
+	return Viewers{}
+}
+
+// Register adds Viewer to collection
+func (v *Viewers) Register(views ...viewer.Viewer) {
+	*v = append(*v, views...)
+}
+
 // ViewManager
 type ViewManager struct {
 	srv *http.Server
 
 	Smgr   *viewer.StatsMgr
+	Views  []viewer.Viewer
 	Ctx    context.Context
 	Cancel context.CancelFunc
-	Views  []viewer.Viewer
 }
 
 // Start runs a http server and begin to collect metrics
@@ -39,41 +90,6 @@ func (vm *ViewManager) Stop() {
 	defer cancel()
 	vm.srv.Shutdown(ctx)
 	vm.Cancel()
-}
-
-func init() {
-	templates.PageTpl = `
-{{- define "page" }}
-<!DOCTYPE html>
-<html>
-    {{- template "header" . }}
-<body>
-<div class="box"> {{- range .Charts }} {{ template "base" . }} {{- end }} </div>
-</body>
-</html>
-{{ end }}
-`
-}
-
-type Viewers []viewer.Viewer
-
-func NewDefaultViewers() Viewers {
-	return Viewers{
-		viewer.NewGoroutinesViewer(),
-		viewer.NewHeapViewer(),
-		viewer.NewStackViewer(),
-		viewer.NewGCNumViewer(),
-		viewer.NewGCSizeViewer(),
-		viewer.NewGCCPUFractionViewer(),
-	}
-}
-
-func NewEmptyViewers() Viewers {
-	return Viewers{}
-}
-
-func (v *Viewers) Register(views ...viewer.Viewer) {
-	*v = append(*v, views...)
 }
 
 // New creates a new ViewManager instance
